@@ -14,7 +14,7 @@ include!("handler.rs");
 
 #[derive(Deserialize, Serialize, Debug)]
 struct Message {
-    id: String,
+    id: i64,
     method: String,
     #[serde(default)] // use default value [], in case of lack of value
     params: Vec<MessageData>
