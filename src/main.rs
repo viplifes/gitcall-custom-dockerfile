@@ -1,3 +1,4 @@
+use libc::c_int;
 use std::env;
 use std::net::{TcpListener, TcpStream};
 use std::thread;
@@ -6,8 +7,7 @@ use std::io::Write;
 use std::io::BufReader;
 use std::io::Error;
 use serde_json::{json, Value};
-use std::sync::Arc;
-use std::sync::atomic::{AtomicBool, Ordering};
+use signal_hook::consts::signal::*;
 use serde::{Deserialize, Serialize};
 use serde_json;
 use std::collections::HashMap;
@@ -40,19 +40,18 @@ pub enum Id {
 	Str(String),
 }
 
-
+#[cfg(not(feature = "extended-siginfo"))]
+use signal_hook::iterator::Signals;
 
 fn main() -> Result<(), Error> {
 
-    let term = Arc::new(AtomicBool::new(false));
-    signal_hook::flag::register(signal_hook::consts::SIGTERM, Arc::clone(&term))?;
+    const SIGNALS: &[c_int] = &[SIGTERM];
+    let mut sigs = Signals::new(SIGNALS)?;
 
     thread::spawn(move || {
-        while !term.load(Ordering::Relaxed) {
-            // Do some time-limited stuff here
-            // (if this could block forever, then there's no guarantee the signal will have any
-            // effect).
-            std::process::exit(0)
+        for signal in &mut sigs {
+            eprintln!("Received signal {:?}", signal);
+            std::process::exit(0);
         }
     });
 
