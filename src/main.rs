@@ -1,3 +1,4 @@
+use std::env;
 use std::net::{TcpListener, TcpStream};
 use std::thread;
 use std::io::prelude::*;
@@ -27,7 +28,8 @@ struct MessageData {
 
 
 fn main() {
-    let listener = TcpListener::bind("0.0.0.0:8888").unwrap();
+    let addr = env::var("USERCODE_PROXY_ADDR").expect("$USERCODE_PROXY_ADDR is not set");
+    let listener = TcpListener::bind(addr).unwrap();
     for stream in listener.incoming() {
         match stream {
             Ok(stream) => {
