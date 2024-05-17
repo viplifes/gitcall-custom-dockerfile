@@ -1,8 +1,8 @@
 const http = require('node:http');
-const uri = process.env.DUNDERGITCALL_URI;
+const uri = process.env.USERCODE_PROXY_ADDR;
 
 if (!uri) {
-    console.error('DUNDERGITCALL_URI env is required but not set');
+    console.error('USERCODE_PROXY_ADDR env is required but not set');
     process.exit(1);
 }
 
