@@ -1,8 +1,8 @@
 const http = require('node:http');
-const uri = process.env.USERCODE_PROXY_ADDR;
 
-if (!uri) {
-    console.error('USERCODE_PROXY_ADDR env is required but not set');
+const port = process.env.GITCALL_PORT;
+if (!port) {
+    console.error('GITCALL_PORT env is required but not set');
     process.exit(1);
 }
 
@@ -30,6 +30,9 @@ const handler = (body, response) => {
     const id = req.id;
     const params = req.params;
     try {
+        if (typeof params !== 'object') {
+            throw Error('expected request params is object');
+        }
         const result = usercode(id, params);
         response.end(JSON.stringify({
             jsonrpc: jsonrpc,
@@ -42,7 +45,7 @@ const handler = (body, response) => {
             id: id,
             error: {
                 code: 1,
-                message: id.toString(),
+                message: e.toString(),
             },
         }));
     }
@@ -50,9 +53,9 @@ const handler = (body, response) => {
 };
 
 const usercode = (taskId, data) => {
-    data.js = "Hello, JS!"
+    data["js"] = "Hello, JS!"
     return data
 };
 
-console.log('server.listen: ' + uri);
-server.listen(uri.split(":")[1]);
+console.log('server.listen: 0.0.0.0:' + port);
+server.listen(port);

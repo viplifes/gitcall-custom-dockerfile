@@ -9,30 +9,30 @@ import com.google.gson.Gson;
 
 import java.nio.charset.StandardCharsets;
 
-
 public class Gitcall {
 
     public static void main(String[] args) throws Exception {
-        String uri = System.getenv("USERCODE_PROXY_ADDR");
-        if (uri == null || uri.isEmpty()) {
-            System.out.println("USERCODE_PROXY_ADDR env is required but not set");
-            throw new Exception("USERCODE_PROXY_ADDR env is required but not set");
+        String portStr = System.getenv("GITCALL_PORT");
+        if (portStr == null || portStr.isEmpty()) {
+            System.out.println("GITCALL_PORT env is required but not set");
+            throw new Exception("GITCALL_PORT env is required but not set");
         }
 
-        Integer port = Integer.parseInt(uri.split(":")[1]);
+        Integer port = Integer.parseInt(portStr);
         var gson = new Gson();
         var server = HttpServer.create(new InetSocketAddress(port), 0);
         server.setExecutor(Executors.newVirtualThreadPerTaskExecutor());
         server.createContext("/").setHandler(exchange -> {
-            String strBody = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);        
-            var request = gson.fromJson(strBody, JsonRpcRequest.class);
-            var response = new JsonRpcResponse(request.jsonrpc, request.id);
+            String strBody = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
+            var response = new JsonRpcResponse("2.0", null);
             try {
+                var request = gson.fromJson(strBody, JsonRpcRequest.class);
+                response.id = request.id;
                 var data = Gitcall.handle(request.params);
                 response.result = data;
-            } catch (Exception e) {                
+            } catch (Exception e) {
                 response.error = new JsonRpcResponse.JsonRpcError(1, e.toString());
-            } 
+            }
             var jsonRessp = gson.toJson(response).getBytes();
             exchange.sendResponseHeaders(200, jsonRessp.length);
             try (var os = exchange.getResponseBody()) {
@@ -40,13 +40,12 @@ public class Gitcall {
             }
         });
         server.start();
-        System.out.println( String.format("server listen: %s", port));
+        System.out.println(String.format("server listen: %s", port));
     }
 
-
     public static Map<String, Object> handle(Map<String, Object> data) throws Exception {
-       data.put("java", "Hello world!");
-       return data;
+        data.put("java", "Hello world!");
+        return data;
     }
 
 }

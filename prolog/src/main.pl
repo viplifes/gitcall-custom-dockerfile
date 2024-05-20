@@ -10,11 +10,9 @@
 :- http_handler(root(.), request, []).
 
 get_port(Port) :-
-  (getenv('USERCODE_PROXY_ADDR', Uri) ->  
-    split_string(Uri, ":", "", UriList),
-    [_, PortStr | _] = UriList,
+  (getenv('GITCALL_PORT', PortStr) ->  
     atom_number(PortStr, Port); 
-    format('USERCODE_PROXY_ADDR env is required but not set~n', []),
+    format('GITCALL_PORT env is required but not set~n', []),
     halt(1)
   ).
 

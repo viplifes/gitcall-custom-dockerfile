@@ -3,9 +3,9 @@ import os
 import sys
 from usercode import handle
 
-uri = os.environ.get('USERCODE_PROXY_ADDR')
-if uri is None or uri == "":
-    sys.stderr.write("USERCODE_PROXY_ADDR env is required but not set\n")
+port = os.environ.get('GITCALL_PORT')
+if port is None or port == "":
+    sys.stderr.write("GITCALL_PORT env is required but not set\n")
     sys.exit(1)
 
 app = Sanic("gitcall-py-app")
@@ -23,5 +23,4 @@ async def handler(request):
         return response.json({"jsonrpc": jsonrpc, "id": id, "error": {"code": 1, "message": str(err)}})
 
 if __name__ == "__main__":
-    hostPort = uri.split(":")
-    app.run(host=hostPort[0], port=int(hostPort[1]))
+    app.run(host="0.0.0.0", port=int(port))

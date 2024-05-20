@@ -16,7 +16,7 @@ use signal_hook::iterator::Signals;
 
 fn main() -> Result<(), Error>  {
 
-    const SIGNALS: &[c_int] = &[SIGTERM];
+    const SIGNALS: &[c_int] = &[SIGTERM, SIGINT, SIGQUIT];
     let mut sigs = Signals::new(SIGNALS)?;
 
     thread::spawn(move || {
@@ -26,7 +26,9 @@ fn main() -> Result<(), Error>  {
         }
     });
 
-    let addr = env::var("USERCODE_PROXY_ADDR").expect("$USERCODE_PROXY_ADDR is not set");
+    let mut addr: String = "0.0.0.0:".to_owned();
+    let port = env::var("GITCALL_PORT").expect("$GITCALL_PORT is not set");
+    addr.push_str(&port);
 
     let mut io = JsonRpcCoreIoHandler::default();
     io.add_method("Usercode.Run", |_params: JsonRpcCoreParams| {
@@ -38,6 +40,8 @@ fn main() -> Result<(), Error>  {
     let server = ServerBuilderHttp::new(io)
         .start_http(&addr.parse().unwrap())
         .expect("Server must start with no issues.");
+
+    eprintln!("started at {:?}", addr);
     server.wait();
 
     Ok(())

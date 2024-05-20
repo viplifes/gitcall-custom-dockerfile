@@ -4,7 +4,7 @@
 declare(strict_types=1);
 
 require dirname(__DIR__) . "/vendor/autoload.php";
-require __DIR__ . '/handler.php';
+require __DIR__ . '/usercode.php';
 
 use Amp\ByteStream;
 use Amp\Http\HttpStatus;
@@ -20,8 +20,8 @@ use Monolog\Logger;
 use function Amp\trapSignal;
 use Psr\Log\LogLevel;
 
-if (false === $uri = getenv('USERCODE_PROXY_ADDR')) {
-    die("USERCODE_PROXY_ADDR env is required but not set");
+if (false === $uri = getenv('GITCALL_PORT')) {
+    die("GITCALL_PORT env is required but not set");
 }
 
 $logHandler = new StreamHandler(ByteStream\getStdout(), LogLevel::INFO);
@@ -37,7 +37,7 @@ $server = new SocketHttpServer(
     ["POST"],
 );
 
-$server->expose($uri);
+$server->expose("0.0.0.0:" . $uri);
 $server->start(new ClosureRequestHandler(function (Request $request) use ($html): Response {
     $body = $request->getBody()->buffer();
     $data = json_decode($body, true);
