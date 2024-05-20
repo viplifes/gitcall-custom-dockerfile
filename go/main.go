@@ -37,7 +37,7 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /", handler)
 
-	fmt.Println("started at http://0.0.0.0:" + port)
+	fmt.Println("Listening on http://0.0.0.0:" + port)
 	http.ListenAndServe("0.0.0.0:"+port, mux)
 }
 

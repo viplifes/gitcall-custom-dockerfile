@@ -41,7 +41,7 @@ fn main() -> Result<(), Error>  {
         .start_http(&addr.parse().unwrap())
         .expect("Server must start with no issues.");
 
-    eprintln!("started at {:?}", addr);
+    eprintln!("Listening on {:?}", addr);
     server.wait();
 
     Ok(())

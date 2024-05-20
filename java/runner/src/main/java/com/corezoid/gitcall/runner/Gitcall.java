@@ -40,7 +40,7 @@ public class Gitcall {
             }
         });
         server.start();
-        System.out.println(String.format("server listen: %s", port));
+        System.out.println(String.format("Listening on 0.0.0.0:%s", port));
     }
 
     public static Map<String, Object> handle(Map<String, Object> data) throws Exception {

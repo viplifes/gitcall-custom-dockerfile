@@ -30,5 +30,5 @@
 ;; start TCP server   
 (defn -main [& args]
   (def port (get_port (System/getenv "GITCALL_PORT"))),
-  (println (format "started at http://0.0.0.0:%d" port))
+  (println (format "Listening on http://0.0.0.0:%d" port))
   (run-server request {:port port}))
