@@ -4,7 +4,7 @@
 exec ros -Q -- $0 "$@"
 |#
 
-(ql:quickload '(:clack :hunchentoot :jonathan) :silent t)
+(ql:quickload '(:woo :jonathan) :silent t)
 
 
 ;; usercode
@@ -53,15 +53,13 @@ exec ros -Q -- $0 "$@"
 (defvar *handler*
   (lambda (env)
     (let ((body
-            (make-array (getf env :content-length)
-                        :element-type '(unsigned-byte 8))))
+            (make-array (getf env :content-length) :element-type '(unsigned-byte 8))))
       (read-sequence body (getf env :raw-body))
-      `(200
-        (:content-type "text/plain; charset=utf-8")
-        (,(run-request (flex:octets-to-string body)))
+      (let ((resp (run-request (flex:octets-to-string body)))) 
+        `(200 
+          (:content-type "application/json; charset=utf-8") 
+          (,resp))
     ))))
-
-
 
 (defun logger (text &rest args)
   "Simple wrapper around format func to simplify logging"
@@ -77,9 +75,10 @@ exec ros -Q -- $0 "$@"
 ;; start server
 (defun main (&rest argv)  
   (declare (ignorable argv))
-  (clack:clackup
-    *handler*
-    :server :hunchentoot
-    :use-thread nil
-    :port (get-port (sb-ext:posix-getenv "GITCALL_PORT"))
-    :address "0.0.0.0"))
+  (let ((port (get-port (sb-ext:posix-getenv "GITCALL_PORT")))) 
+    (logger "Listening on http://0.0.0.0:~A" port)
+    (woo:run
+      *handler*
+      :debug nil
+      :port port
+      :address "0.0.0.0")))
