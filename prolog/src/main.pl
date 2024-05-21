@@ -3,18 +3,11 @@
 :- use_module(library(http/json_convert)).
 :- use_module(usercode).
 
-:- initialization
-    get_port(Port),
-    http_server([port(Port)]).
-
+:- use_module(library(http/http_unix_daemon)).
+:- initialization http_daemon.
 :- http_handler(root(.), request, []).
 
-get_port(Port) :-
-  (getenv('GITCALL_PORT', PortStr) ->  
-    atom_number(PortStr, Port); 
-    format('GITCALL_PORT env is required but not set~n', []),
-    halt(1)
-  ).
+
 
 request(Request) :-
   http_read_json_dict(Request, Json),

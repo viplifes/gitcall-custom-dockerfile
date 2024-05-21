@@ -12,4 +12,4 @@ RUN addgroup --gid 501 usercode && \
     usercode
 USER usercode
 
-CMD ["swipl", "src/main.pl"]
+ENTRYPOINT swipl src/main.pl --fork=false --sighup=quit --port="$GITCALL_PORT"
