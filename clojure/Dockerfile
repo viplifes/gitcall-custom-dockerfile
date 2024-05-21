@@ -18,6 +18,14 @@ RUN java -XX:DumpLoadedClassList=/app/classes.lst -jar /app/target/gitcall-1.0.0
 # generate the AppCDS archive file.
 RUN java -Xshare:dump -XX:SharedClassListFile=/app/classes.lst -XX:SharedArchiveFile=/app/appcds.jsa --class-path /app/target/gitcall-1.0.0-standalone.jar
 
+RUN addgroup --gid 501 usercode && \
+    adduser --disabled-password \
+    --gecos "" \
+    --shell /usr/sbin/nologin \
+    --ingroup usercode \
+    --uid 501 \
+    usercode
+USER usercode
 
 # Set JVM Options for best launch time
 # https://cloud.google.com/run/docs/tips/java

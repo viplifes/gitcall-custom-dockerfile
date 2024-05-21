@@ -14,4 +14,14 @@ RUN upx -1 /app/gitcall-app
 
 FROM alpine:3.19
 COPY --from=builder /app/gitcall-app /app/gitcall-app
+
+RUN addgroup --gid 501 usercode && \
+    adduser --disabled-password \
+    --gecos "" \
+    --shell /usr/sbin/nologin \
+    --ingroup usercode \
+    --uid 501 \
+    usercode
+USER usercode
+
 ENTRYPOINT ["/app/gitcall-app"]

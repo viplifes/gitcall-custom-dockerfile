@@ -5,4 +5,13 @@ COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 COPY src src
 
+RUN addgroup --gid 501 usercode && \
+    adduser --disabled-password \
+    --gecos "" \
+    --shell /usr/sbin/nologin \
+    --ingroup usercode \
+    --uid 501 \
+    usercode
+USER usercode
+
 ENTRYPOINT ["python", "src/main.py"]

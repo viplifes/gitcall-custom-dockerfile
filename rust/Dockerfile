@@ -10,4 +10,13 @@ RUN cargo build --release
 FROM alpine:3.19
 COPY --from=builder /usr/src/app/target/release/gitcall-rust-app /usr/local/bin/gitcall-rust-app
 
+RUN addgroup --gid 501 usercode && \
+    adduser --disabled-password \
+    --gecos "" \
+    --shell /usr/sbin/nologin \
+    --ingroup usercode \
+    --uid 501 \
+    usercode
+USER usercode
+
 CMD ["gitcall-rust-app"]

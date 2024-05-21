@@ -11,4 +11,13 @@ COPY composer.json composer.json
 COPY src src
 RUN composer install --optimize-autoloader --no-dev
 
+RUN addgroup --gid 501 usercode && \
+    adduser --disabled-password \
+    --gecos "" \
+    --shell /usr/sbin/nologin \
+    --ingroup usercode \
+    --uid 501 \
+    usercode
+USER usercode
+
 ENTRYPOINT ["php", "src/main.php"]
