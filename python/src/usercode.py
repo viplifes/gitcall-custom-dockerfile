@@ -1,4 +1,4 @@
-def handle(taskId, data):
+# write your code here
+def handle(data):
     data["python"] = "Hello, world!"
-    data["pythonTaskId"] = taskId
     return data

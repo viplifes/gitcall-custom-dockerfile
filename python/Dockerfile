@@ -14,4 +14,4 @@ RUN addgroup --gid 501 usercode && \
     usercode
 USER usercode
 
-ENTRYPOINT ["python", "src/main.py"]
+ENTRYPOINT fastapi run src/main.py --host=0.0.0.0 --port="$GITCALL_PORT"
