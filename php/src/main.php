@@ -64,8 +64,10 @@ $server->start(new ClosureRequestHandler(function (Request $request) use ($html)
             body: json_encode([
                 'jsonrpc' => $jsonrpc,
                 'id' => $id,
-                'code' => 1,
-                'message' => $e->getMessage()
+                'error' => [
+                    'code' => 1,
+                    'message' => $e->getMessage()
+                ]
             ]),
         );
     }
