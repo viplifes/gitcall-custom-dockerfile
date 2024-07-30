@@ -66,12 +66,13 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 // usercode logic
 func usercode(data map[string]any) (map[string]any, error) {
-	data["hello"] = "Hello world!"
+	data["golang"] = "Hello, world!"
 	return data, nil
 }
 
 func send_ok(w http.ResponseWriter, id string, result map[string]any) {
 	w.WriteHeader(200)
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	b, err := json.Marshal(response{
 		Jsonrpc: "2.0",
 		ID:      id,
@@ -85,6 +86,7 @@ func send_ok(w http.ResponseWriter, id string, result map[string]any) {
 
 func send_err(w http.ResponseWriter, id string, code int, message string) {
 	w.WriteHeader(200)
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	b, err := json.Marshal(response{
 		Jsonrpc: "2.0",
 		ID:      id,
@@ -102,7 +104,8 @@ func send_err(w http.ResponseWriter, id string, code int, message string) {
 func check_panic(w http.ResponseWriter) {
 	if r := recover(); r != nil {
 		slog.Error("logPanic", "r", r)
-		w.WriteHeader(500)
+		w.WriteHeader(200)
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		b, err := json.Marshal(response{
 			Jsonrpc: "2.0",
 			Error: &respError{

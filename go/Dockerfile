@@ -6,13 +6,12 @@ RUN go mod download && go mod verify
 
 COPY . .
 RUN GOOS=linux go build -ldflags="-s -w" -v -o /app/gitcall-app ./main.go
-
 # Compress GoLang App binary. Lower size - x4
 RUN apk add --no-cache --virtual .fetch-deps upx
 RUN upx -1 /app/gitcall-app
 
 
-FROM alpine:3.19
+FROM alpine:3.20
 COPY --from=builder /app/gitcall-app /app/gitcall-app
 
 RUN addgroup --gid 501 usercode && \

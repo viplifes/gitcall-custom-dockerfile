@@ -53,7 +53,7 @@ const handler = (body, response) => {
 };
 
 const usercode = (taskId, data) => {
-    data["js"] = "Hello, JS!"
+    data["js"] = "Hello, world!"
     return data
 };
 
