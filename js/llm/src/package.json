@@ -1,0 +1,9 @@
+{
+    "name": "gitcall-example",
+    "version": "1.0.0",
+    "description": "gitcall example",
+    "type": "module",
+    "dependencies": {
+      "node-llama-cpp": "^3.0.3"
+    }
+  }
