@@ -1,4 +1,4 @@
-FROM biplifes/llm-llama:latest as model
+FROM --platform=linux/arm64 biplifes/llm-llama:latest as model
 
 FROM nvidia/cuda:12.6.1-base-ubuntu24.04
 
