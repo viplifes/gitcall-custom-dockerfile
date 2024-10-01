@@ -1,11 +1,15 @@
 # docker build -f Dockerfile.build -t biplifes/llm-llama:latest --platform=linux/amd64 .
 # docker push biplifes/llm-llama:latest 
-FROM nvidia/cuda:12.6.1-base-ubuntu24.04
-
-RUN apt update -y && apt install -y nodejs npm
+FROM nvidia/cuda:12.6.1-runtime-ubuntu24.04
 
 WORKDIR /app
 COPY src .
 COPY ./meta-llama-3.1-8b-instruct-q4_k_m.gguf /model/meta-llama-3.1-8b-instruct-q4_k_m.gguf
 
-RUN npm install
+RUN \
+  apt-get update && \
+  apt-get install -y nodejs npm && \
+  npm install && \
+  apt-get remove --purge -y npm && \
+  apt-get autoremove -y && \
+  rm -rf /var/lib/apt/lists/*

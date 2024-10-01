@@ -1,42 +1,54 @@
-import path from "path";
 import {getLlama, LlamaChatSession} from "node-llama-cpp";
 
 const llama = await getLlama();
 const model = await llama.loadModel({
-    modelPath: path.join("/model", "meta-llama-3.1-8b-instruct-q4_k_m.gguf")
+    modelPath: './meta-llama-3.1-8b-instruct-q4_k_m.gguf'
 });
-const context = await model.createContext();
-const session = new LlamaChatSession({
-    contextSequence: context.getSequence()
-});
+const sessionLifeTime = 1800; // 30min
+const sessions = {};
 
+console.log("llama.GPU: " + llama._gpu);
 
 const usercode = async (data) => {
 
-    const q1 = "Hi there, how are you?";
-    console.log("User: " + q1);
+    const session = await getOrCreateSession(data.sessionId);
+    console.log(`[${data.sessionId}] User: ${data.text}`);
+    const answer = await session.prompt(data.text);
+    console.log(`[${data.sessionId}] AI: ${answer}`);
 
-    const a1 = await session.prompt(q1);
-    console.log("AI: " + a1);
-
-
-    const q2 = "Summarize what you said";
-    console.log("User: " + q2);
-
-    const a2 = await session.prompt(q2);
-    console.log("AI: " + a2);
-
-
-    data["js"] = "Hello, world!"
+    data["answer"] = answer
     return data
 };
 
 
+const getOrCreateSession = async (sessionId) => {
+    // clean timer
+    const cleanRef = setTimeout(() => {
+        if (sessions[sessionId]){
+            clearTimeout(sessions[sessionId].cleanRef);
+            delete sessions[sessionId];
+        }
+    }, sessionLifeTime * 1000);
+
+    // session exists
+    if (sessions[sessionId]){
+        clearTimeout(sessions[sessionId].cleanRef);
+        sessions[sessionId].cleanRef = cleanRef;
+        return sessions[sessionId].session;
+    }
+
+    // session not exists
+    const context = await model.createContext();
+    const session = new LlamaChatSession({
+        contextSequence: context.getSequence()
+    });
+    sessions[sessionId] = {
+        session: session,
+        cleanRef: cleanRef,
+    };
+    
+    return session
+};
+
+
 export default usercode;
-
-
-
-// module.exports = async (data) => {
-//     data["js"] = "Hello, world!"
-//     return data
-// };
