@@ -8,11 +8,7 @@ RUN addgroup --gid 501 usercode && \
     --uid 501 \
     usercode
 
-RUN chown -R usercode:usercode /app && \
-    chmod 0750 /app && \
-    chown -R usercode:usercode /model && \
-    chmod 0750 /model
-
+RUN chown -R usercode:usercode /app && chmod 0750 /app 
 USER usercode
 
 ENTRYPOINT ["node", "/app/main.js"]

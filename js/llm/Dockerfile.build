@@ -3,8 +3,7 @@
 FROM nvidia/cuda:12.6.1-runtime-ubuntu24.04
 
 WORKDIR /app
-COPY src .
-COPY ./meta-llama-3.1-8b-instruct-q4_k_m.gguf /model/meta-llama-3.1-8b-instruct-q4_k_m.gguf
+COPY src /app
 
 RUN \
   apt-get update && \
